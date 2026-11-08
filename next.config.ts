@@ -12,6 +12,16 @@ const nextConfig: NextConfig = {
       },
     },
   },
+  async rewrites() {
+    return [
+      {
+        source: "/api/auth/:path*",
+        destination: "https://cube-desk-server.vercel.app/api/auth/:path*",
+      },
+    ];
+  },
 };
+
+
 
 export default nextConfig;
