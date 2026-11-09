@@ -187,7 +187,7 @@ const router = useRouter();
                     isActive={isActive(pathname, item.href)}
                     tooltip={item.title}
                   >
-                    <Link href={item.href}>
+                    <Link href={item.href} prefetch={false} >
                       <item.icon />
                       <span>{item.title}</span>
                     </Link>
