@@ -47,7 +47,7 @@ export function LiveStatusBadge({
   return (
     
     <div className="inline-block rounded-4xl p-px">
-      <div className="flex items-center gap-3 rounded-4xl bg-[#acf7d1] dark:bg-slate-950/90 px-4 py-2 font-mono text-xs dark:text-slate-300 text-[#079E8D] shadow-[0_0_40px_-8px_rgba(45,212,191,0.55)] backdrop-blur-md sm:text-sm">
+      <div className="flex items-center gap-3 rounded-4xl bg-white border dark:bg-slate-950/90 px-4 py-2 font-mono text-xs dark:text-slate-300 text-[#079E8D] backdrop-blur-md sm:text-sm">
         {/* pulse dot */}
         <span className="relative flex size-2.5">
           <span className="absolute inline-flex size-full animate-ping rounded-full bg-teal-700 opacity-75" />
