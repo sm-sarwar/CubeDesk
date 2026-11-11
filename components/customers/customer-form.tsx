@@ -5,11 +5,16 @@ import { useForm } from "@tanstack/react-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 import type { ActionResult } from "@/lib/backend";
 import {
   CHANNELS,
-  DIVISIONS,
+  DISTRICT_GROUPS,
   customerSchema,
   type CustomerInput,
 } from "@/lib/validations/customer";
@@ -63,7 +68,8 @@ export function CustomerForm({
       <FieldGroup>
         <form.Field name="name">
           {(field) => {
-            const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
+            const isInvalid =
+              field.state.meta.isTouched && !field.state.meta.isValid;
             return (
               <Field data-invalid={isInvalid}>
                 <FieldLabel htmlFor={field.name}>Full name</FieldLabel>
@@ -83,7 +89,8 @@ export function CustomerForm({
 
         <form.Field name="phone">
           {(field) => {
-            const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
+            const isInvalid =
+              field.state.meta.isTouched && !field.state.meta.isValid;
             return (
               <Field data-invalid={isInvalid}>
                 <FieldLabel htmlFor={field.name}>Phone number</FieldLabel>
@@ -105,7 +112,8 @@ export function CustomerForm({
 
         <form.Field name="address">
           {(field) => {
-            const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
+            const isInvalid =
+              field.state.meta.isTouched && !field.state.meta.isValid;
             return (
               <Field data-invalid={isInvalid}>
                 <FieldLabel htmlFor={field.name}>Address</FieldLabel>
@@ -125,23 +133,36 @@ export function CustomerForm({
         </form.Field>
 
         <div className="grid grid-cols-2 gap-3">
-          <form.Field name="division">
-            {(field) => (
-              <Field>
-                <FieldLabel htmlFor={field.name}>Division</FieldLabel>
-                <select
-                  id={field.name}
-                  name={field.name}
-                  value={field.state.value}
-                  onChange={(e) => field.handleChange(e.target.value as CustomerInput["division"])}
-                  className={selectClass}
-                >
-                  {DIVISIONS.map((d) => (
-                    <option key={d} value={d}>{d}</option>
-                  ))}
-                </select>
-              </Field>
-            )}
+          <form.Field name="district">
+            {(field) => {
+              const isInvalid =
+                field.state.meta.isTouched && !field.state.meta.isValid;
+              return (
+                <Field data-invalid={isInvalid}>
+                  <FieldLabel htmlFor={field.name}>District</FieldLabel>
+                  <select
+                    id={field.name}
+                    name={field.name}
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    className={selectClass}
+                  >
+                    <option value="">Select district</option>
+                    {Object.entries(DISTRICT_GROUPS).map(([division, list]) => (
+                      <optgroup key={division} label={division}>
+                        {list.map((d) => (
+                          <option key={d} value={d}>
+                            {d}
+                          </option>
+                        ))}
+                      </optgroup>
+                    ))}
+                  </select>
+                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                </Field>
+              );
+            }}
           </form.Field>
 
           <form.Field name="source">
@@ -152,11 +173,17 @@ export function CustomerForm({
                   id={field.name}
                   name={field.name}
                   value={field.state.value}
-                  onChange={(e) => field.handleChange(e.target.value as CustomerInput["source"])}
+                  onChange={(e) =>
+                    field.handleChange(
+                      e.target.value as CustomerInput["source"],
+                    )
+                  }
                   className={selectClass}
                 >
                   {CHANNELS.map((c) => (
-                    <option key={c} value={c}>{capitalize(c)}</option>
+                    <option key={c} value={c}>
+                      {capitalize(c)}
+                    </option>
                   ))}
                 </select>
               </Field>

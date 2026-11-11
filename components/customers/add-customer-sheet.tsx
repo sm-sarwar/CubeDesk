@@ -19,7 +19,7 @@ const emptyCustomer: CustomerInput = {
   name: "",
   phone: "",
   address: "",
-  division: "Dhaka",
+  district: "",
   source: "website",
 };
 

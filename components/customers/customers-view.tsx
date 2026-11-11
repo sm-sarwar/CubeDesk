@@ -13,11 +13,11 @@ import {
 import {
   capitalize,
   formatTaka,
-  normalizeDivision,
+  normalizeDistrict,
   sourceBadgeClass,
   whatsappLink,
 } from "@/lib/customers";
-import { CHANNELS, DIVISIONS } from "@/lib/validations/customer";
+import { CHANNELS, DISTRICT_GROUPS } from "@/lib/validations/customer";
 import type { CustomerRow } from "@/types/customer";
 import { AddCustomerSheet } from "./add-customer-sheet";
 import { CustomerDetailsSheet } from "./customer-details-sheet";
@@ -29,7 +29,7 @@ const selectClass =
 export function CustomersView({ rows }: { rows: CustomerRow[] }) {
   const [search, setSearch] = useState("");
   const [channel, setChannel] = useState("");
-  const [division, setDivision] = useState("");
+  const [district, setDistrict] = useState("");
   const [dueFilter, setDueFilter] = useState<"" | "due" | "clear">("");
 
   // Details panel
@@ -37,14 +37,14 @@ export function CustomersView({ rows }: { rows: CustomerRow[] }) {
   const [detailsOpen, setDetailsOpen] = useState(false);
   const selected = rows.find((r) => r.id === selectedId) ?? null;
   const [editId, setEditId] = useState<number | null>(null);
-const [editOpen, setEditOpen] = useState(false);
-const editing = rows.find((r) => r.id === editId) ?? null;
+  const [editOpen, setEditOpen] = useState(false);
+  const editing = rows.find((r) => r.id === editId) ?? null;
 
-function startEdit() {
-  setDetailsOpen(false);   
-  setEditId(selectedId);
-  setEditOpen(true);
-}
+  function startEdit() {
+    setDetailsOpen(false);
+    setEditId(selectedId);
+    setEditOpen(true);
+  }
 
   function openDetails(id: number) {
     setSelectedId(id);
@@ -59,8 +59,8 @@ function startEdit() {
       }
       if (channel && r.source?.toLowerCase() !== channel) return false;
       if (
-        division &&
-        normalizeDivision(r.division) !== normalizeDivision(division)
+        district &&
+        normalizeDistrict(r.district) !== normalizeDistrict(district)
       ) {
         return false;
       }
@@ -68,7 +68,7 @@ function startEdit() {
       if (dueFilter === "clear" && r.due > 0) return false;
       return true;
     });
-  }, [rows, search, channel, division, dueFilter]);
+  }, [rows, search, channel, district, dueFilter]);
 
   return (
     <div className="space-y-6">
@@ -106,15 +106,19 @@ function startEdit() {
         </select>
 
         <select
-          value={division}
-          onChange={(e) => setDivision(e.target.value)}
+          value={district}
+          onChange={(e) => setDistrict(e.target.value)}
           className={selectClass}
         >
-          <option value="">All divisions</option>
-          {DIVISIONS.map((d) => (
-            <option key={d} value={d}>
-              {d}
-            </option>
+          <option value="">All districts</option>
+          {Object.entries(DISTRICT_GROUPS).map(([District, list]) => (
+            <optgroup key={District} label={District}>
+              {list.map((d) => (
+                <option key={d} value={d}>
+                  {d}
+                </option>
+              ))}
+            </optgroup>
           ))}
         </select>
 
@@ -137,7 +141,7 @@ function startEdit() {
               {[
                 "Name",
                 "Phone",
-                "Division",
+                "District",
                 "Channel",
                 "Orders",
                 "Total spent",
@@ -181,13 +185,13 @@ function startEdit() {
                     {r.phone}
                   </TableCell>
 
-                  <TableCell>{r.division ?? "-"}</TableCell>
+                  <TableCell>{r.district ?? "-"}</TableCell>
 
                   <TableCell>
                     {r.source ? (
                       <span
                         className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${sourceBadgeClass(
-                          r.source
+                          r.source,
                         )}`}
                       >
                         {capitalize(r.source)}
@@ -205,7 +209,9 @@ function startEdit() {
 
                   <TableCell className="font-mono font-medium">
                     {r.due > 0 ? (
-                      <span className="text-[#E0663E]">{formatTaka(r.due)}</span>
+                      <span className="text-[#E0663E]">
+                        {formatTaka(r.due)}
+                      </span>
                     ) : (
                       <span className="text-muted-foreground">–</span>
                     )}
@@ -231,18 +237,18 @@ function startEdit() {
       </div>
 
       <CustomerDetailsSheet
-  customer={selected}
-  open={detailsOpen}
-  onOpenChange={setDetailsOpen}
-  onEdit={startEdit}
-  onDeleted={() => setDetailsOpen(false)}
-/>
+        customer={selected}
+        open={detailsOpen}
+        onOpenChange={setDetailsOpen}
+        onEdit={startEdit}
+        onDeleted={() => setDetailsOpen(false)}
+      />
 
-<EditCustomerSheet
-  customer={editing}
-  open={editOpen}
-  onOpenChange={setEditOpen}
-/>
+      <EditCustomerSheet
+        customer={editing}
+        open={editOpen}
+        onOpenChange={setEditOpen}
+      />
     </div>
   );
 }

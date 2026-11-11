@@ -1,7 +1,7 @@
 import type { Customer, OrderStatus } from "@/types/customer";
 import type { OrderWithCustomer } from "@/types/order";
 import { buildDueGroups, type DueGroup } from "@/lib/due";
-import { capitalize, normalizeDivision } from "@/lib/customers";
+import { capitalize, divisionOf } from "@/lib/customers";
 import { ORDER_STATUSES } from "@/lib/validations/order";
 
 export interface Slice {
@@ -109,14 +109,14 @@ export function buildDashboard(
   // Division
   const divMap = new Map<string, number>();
   for (const o of active) {
-    const key = normalizeDivision(o.customer?.division);
-    if (!key) continue;
-    divMap.set(key, (divMap.get(key) ?? 0) + num(o.totalAmount));
+    const division = divisionOf(o.customer?.district);
+    if (!division) continue;
+    divMap.set(division, (divMap.get(division) ?? 0) + num(o.totalAmount));
   }
   const divisions = [...divMap.entries()]
     .sort((a, b) => b[1] - a[1])
     .slice(0, 6)
-    .map(([k, v]) => ({ label: capitalize(k), value: v }));
+    .map(([k, v]) => ({ label: k, value: v }));
 
   // Top customers
   const custMap = new Map<number, { id: number; name: string; phone: string; value: number; orders: number }>();

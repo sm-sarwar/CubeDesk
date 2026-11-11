@@ -1,5 +1,5 @@
 import type { Customer, CustomerRow, Order } from "@/types/customer";
-import { CHANNELS, DIVISIONS, type CustomerInput } from "@/lib/validations/customer";
+import { CHANNELS, DISTRICTS, DISTRICT_GROUPS, type CustomerInput } from "@/lib/validations/customer";
 export function buildCustomerRows(
   customers: Customer[],
   orders: Order[]
@@ -41,17 +41,21 @@ export function whatsappLink(phone: string) {
 }
 
 // Division er alada alada banan ke ek kore nei (Chattagram / Chittagong / Chattogram)
-const DIVISION_ALIASES: Record<string, string> = {
-  chattagram: "chattogram",
+const DISTRICT_ALIASES: Record<string, string> = {
   chittagong: "chattogram",
-  chattogram: "chattogram",
+  chattagram: "chattogram",
+  comilla: "cumilla",
   barisal: "barishal",
-  barishal: "barishal",
+  bogra: "bogura",
+  jessore: "jashore",
+  "coxs bazar": "cox's bazar",
+  "cox bazar": "cox's bazar",
+  "coxsbazar": "cox's bazar",
 };
 
-export const normalizeDivision = (d?: string | null) => {
+export const normalizeDistrict = (d?: string | null) => {
   const key = (d ?? "").trim().toLowerCase();
-  return DIVISION_ALIASES[key] ?? key;
+  return DISTRICT_ALIASES[key] ?? key;
 };
 
 // "2026-08-19T00:00:00.000Z" -> "2026-08-19"
@@ -69,18 +73,25 @@ const SOURCE_STYLES: Record<string, string> = {
 export const sourceBadgeClass = (source: string) =>
   SOURCE_STYLES[source.toLowerCase()] ?? "bg-muted text-muted-foreground";
 
-// Customer er data ke edit form er format e anbe.
-// Purono data te "Chattagram" thakle form er "Chattogram" er sathe mile jabe.
+export function divisionOf(district?: string | null): string | null {
+  const key = normalizeDistrict(district);
+  for (const [division, list] of Object.entries(DISTRICT_GROUPS)) {
+    if (list.some((d) => normalizeDistrict(d) === key)) return division;
+  }
+  return null;
+}
+
+
 export function toCustomerFormValues(c: Customer): CustomerInput {
-  const division =
-    DIVISIONS.find((d) => normalizeDivision(d) === normalizeDivision(c.division)) ?? "Dhaka";
+  const district =
+    DISTRICTS.find((d) => normalizeDistrict(d) === normalizeDistrict(c.district)) ?? "";
   const source = CHANNELS.find((s) => s === c.source?.toLowerCase()) ?? "website";
 
   return {
     name: c.name,
     phone: c.phone,
     address: c.address ?? "",
-    division,
+    district,
     source,
   };
 }

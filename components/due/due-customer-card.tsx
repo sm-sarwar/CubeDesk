@@ -31,7 +31,7 @@ export function DueCustomerCard({ group }: { group: DueGroup }) {
             <p className="truncate font-semibold">{customer.name}</p>
             <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
               <span className="font-mono">{customer.phone}</span>
-              {customer.division && <span>· {customer.division}</span>}
+              {customer.district && <span>· {customer.district}</span>}
               {customer.source && (
                 <span
                   className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${sourceBadgeClass(

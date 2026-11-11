@@ -7,7 +7,7 @@ export interface Customer {
   email?: string | null;
   address?: string | null;
   city?: string | null;
-  division?: string | null;
+  district?: string | null;
   source?: string | null;
   createdAt: string;
 }

@@ -14,6 +14,7 @@ import { WhatsAppIcon } from "./whatsapp-icon";
 import { DeleteCustomerDialog } from "./delete-customer-dialog";
 import {
   capitalize,
+  divisionOf,
   formatDate,
   formatTaka,
   sourceBadgeClass,
@@ -42,8 +43,12 @@ export function CustomerDetailsSheet({
         {customer && (
           <>
             <SheetHeader>
-              <SheetTitle className="text-xl font-bold">{customer.name}</SheetTitle>
-              <SheetDescription className="font-mono">{customer.phone}</SheetDescription>
+              <SheetTitle className="text-xl font-bold">
+                {customer.name}
+              </SheetTitle>
+              <SheetDescription className="font-mono">
+                {customer.phone}
+              </SheetDescription>
             </SheetHeader>
 
             <div className="space-y-6 px-4 pb-8">
@@ -59,7 +64,9 @@ export function CustomerDetailsSheet({
                   <p className="text-xs text-muted-foreground">Due</p>
                   <p
                     className={`mt-1 font-mono text-xl font-bold ${
-                      customer.due > 0 ? "text-[#E0663E]" : "text-muted-foreground"
+                      customer.due > 0
+                        ? "text-[#E0663E]"
+                        : "text-muted-foreground"
                     }`}
                   >
                     {formatTaka(customer.due)}
@@ -84,7 +91,10 @@ export function CustomerDetailsSheet({
                   <Pencil className="mr-1.5 size-4" />
                   Edit
                 </Button>
-                <DeleteCustomerDialog customer={customer} onDeleted={onDeleted} />
+                <DeleteCustomerDialog
+                  customer={customer}
+                  onDeleted={onDeleted}
+                />
               </div>
 
               {/* Contact details */}
@@ -94,16 +104,25 @@ export function CustomerDetailsSheet({
                 </h3>
                 <dl className="text-sm">
                   <Row label="Address">
-                    <span className="text-right font-medium">{customer.address ?? "-"}</span>
+                    <span className="text-right font-medium">
+                      {customer.address ?? "-"}
+                    </span>
                   </Row>
-                  <Row label="Division">
-                    <span className="font-medium">{customer.division ?? "-"}</span>
+                  <Row label="District">
+                    <span className="font-medium">
+                      {customer.district ?? "-"}
+                      {divisionOf(customer.district) && (
+                        <span className="ml-1 text-xs text-muted-foreground">
+                          ({divisionOf(customer.district)})
+                        </span>
+                      )}
+                    </span>
                   </Row>
                   <Row label="Channel">
                     {customer.source ? (
                       <span
                         className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${sourceBadgeClass(
-                          customer.source
+                          customer.source,
                         )}`}
                       >
                         {capitalize(customer.source)}
@@ -113,7 +132,9 @@ export function CustomerDetailsSheet({
                     )}
                   </Row>
                   <Row label="Customer since" last>
-                    <span className="font-mono font-medium">{formatDate(customer.createdAt)}</span>
+                    <span className="font-mono font-medium">
+                      {formatDate(customer.createdAt)}
+                    </span>
                   </Row>
                 </dl>
               </section>
@@ -131,7 +152,10 @@ export function CustomerDetailsSheet({
                 ) : (
                   <ul className="space-y-3">
                     {customer.orders.map((o) => {
-                      const due = Math.max(Number(o.totalAmount) - Number(o.paidAmount), 0);
+                      const due = Math.max(
+                        Number(o.totalAmount) - Number(o.paidAmount),
+                        0,
+                      );
                       return (
                         <li key={o.id} className="rounded-lg border p-3">
                           <div className="flex items-start justify-between gap-3">
@@ -143,7 +167,8 @@ export function CustomerDetailsSheet({
                           <div className="mt-1 flex items-center justify-between gap-3 text-xs text-muted-foreground">
                             <span>
                               {formatDate(o.orderDate)}
-                              {customer.source && ` · ${capitalize(customer.source)}`}
+                              {customer.source &&
+                                ` · ${capitalize(customer.source)}`}
                             </span>
                             {o.status === "cancelled" ? (
                               <span>-</span>
@@ -179,7 +204,9 @@ function Row({
   last?: boolean;
 }) {
   return (
-    <div className={`flex items-center justify-between gap-4 py-2.5 ${last ? "" : "border-b"}`}>
+    <div
+      className={`flex items-center justify-between gap-4 py-2.5 ${last ? "" : "border-b"}`}
+    >
       <dt className="shrink-0 text-muted-foreground">{label}</dt>
       <dd>{children}</dd>
     </div>
